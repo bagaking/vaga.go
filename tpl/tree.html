@@ -1,0 +1,27 @@
+{{ define "tree" }}
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        {{ template "basic_style" }}
+        <title>Vagaking - Resources in {{ .blob.Name }}</title>
+    </head>
+    <body>
+    <h3>Resources in {{ .blob.Name }}</h3>
+
+    {{ range $key, $value := .resultMap }}
+        <div>
+            <h6> {{ $key }} </h6>
+
+            {{ range . }}
+                <span style="color: #666666"> - </span><a href="/watch/{{.NameHash}}"> {{.FileName}}</a> <a style="color: #666666"> - ({{.FileSizeH}})</a> <br/>
+            {{end}}
+        </div>
+    {{ end }}
+
+    </body>
+    </html>
+
+{{ end }}
