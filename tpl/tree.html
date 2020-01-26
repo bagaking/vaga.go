@@ -1,27 +1,180 @@
 {{ define "tree" }}
 
-    <!DOCTYPE html>
-    <html>
-    <head>
+<!DOCTYPE html>
+<html>
+<head>
 
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        {{ template "basic_style" }}
-        <title>Vagaking - Resources in {{ .blob.Name }}</title>
-    </head>
-    <body>
-    <h3>Resources in {{ .blob.Name }}</h3>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+{{ template "basic_style" }}
 
-    {{ range $key, $value := .resultMap }}
-        <div>
-            <h6> {{ $key }} </h6>
+    <style type="text/css">
 
-            {{ range . }}
-                <span style="color: #666666"> - </span><a href="/watch/{{.NameHash}}"> {{.FileName}}</a> <a style="color: #666666"> - ({{.FileSizeH}})</a> <br/>
-            {{end}}
-        </div>
-    {{ end }}
+        aside {
+            width: 300px;
+            height: 100%;
+            display: block;
+            background: #262a30;
+        }
 
-    </body>
-    </html>
+        atitle {
+            /*background: #333333;*/
+            border: #333 2px solid;
+            font: 24px "Microsoft YaHei", "Arial";
+            color: #ABC;
+            padding: 20px;
+            margin: 0 0 5px 0;
+            text-align: center;
+        }
+
+        atitle i {
+            /*font-size: 24px;*/
+            color: #ABC;
+            margin: 0 20px ;
+        }
+
+        atitle i:hover {
+            /*font-size: 24px;*/
+            color: #CC9966;
+            margin: 0 22px ;
+        }
+
+        aside ul {
+            padding: 0px 5px 5px 0px;
+        }
+
+        aside ul li {
+            display: list-item;
+
+            float: left;
+            margin: 2px auto;
+
+            background: transparent;
+            list-style: none;
+            line-height: 25px;
+
+            color: #999;
+            text-decoration: none
+        }
+
+        aside ul li a {
+            display: block;
+        }
+
+        aside ul li:hover {
+            margin: 0px auto;
+            background: transparent;
+            color: #CCC;
+            cursor: pointer;
+        }
+
+
+
+        content .folder {
+             background: #333;
+             border: #363636 1px solid;
+             border-radius: 2px;
+             padding: 4px;
+             cursor: pointer;
+             transition: background-color 0.2s ease-in-out 0s;
+         }
+
+        content .folder:hover {
+            background: #444;
+            border: #565666 1px solid;
+            border-radius: 2px;
+            padding: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out 0s;
+        }
+
+        content .folder span {
+            background: #69C;
+            border-radius: 2px;
+            color: white;
+            padding: 2px 6px;
+            font-style: oblique;
+        }
+
+        content .folder itoa {
+            color: #CCC;
+            padding: 2px 6px;
+            font-style: oblique;
+        }
+
+        content .folder itoa:after {
+            content: " ."
+        }
+
+        content .active {
+            background: #637788;
+            border: #666 1px solid;
+            border-radius: 2px;
+            padding: 4px;
+            transition: background-color 0.2s ease-in-out 0s;
+        }
+
+        content .folder_content {
+            padding: 0 6px;
+            display: none;
+        }
+
+    </style>
+
+    <script>
+        function CheckTag(id, btn) {
+            $(".folder_content").css("display", "none")
+            $(".folder").removeClass("active")
+            $(btn).addClass("active")
+            $(document.getElementById(id)).css("display", "block")
+        }
+    </script>
+
+    <title>Vagaking - Resources in {{ .blob.Name }}</title>
+</head>
+<body>
+
+
+<div class="container">
+    <atitle class="row">
+        <a href="/">
+            <i id="home-icon" class="fa fa-chevron-left" title="回到主页"> </i>
+        </a>
+
+        Resources in {{ .blob.Name }}
+    </atitle>
+       {{/*<aside class="col-sm-3">*/}}
+    {{/*<ul style="display: block;">*/}}
+    {{/*{{ range $key, $value := .resultMap }}*/}}
+    {{/*<li><a>{{ $key }}</a></li>*/}}
+    {{/*{{ end }}*/}}
+    {{/*</ul>*/}}
+    {{/*</aside>*/}}
+
+        <content class="col-sm">
+        {{ $ind := 0 }}
+        {{ range $key, $value := .resultMap }}
+            <row>
+                <h6 class="folder" onclick="CheckTag({{ $key }}, this)">
+                    <itoa>{{itoa}}</itoa>
+                    {{ $key }}
+                    <span>{{len .}}</span>
+                </h6>
+                <ul class="folder_content" id="{{ $key }}">
+                {{ range . }}
+                    <li>
+                        <a href="/watch/{{.NameHash}}"> {{.FileName}}</a> <a style="color: #666666"> - ({{.FileSizeH}}
+                        )</a>
+                    </li>
+                {{end}}
+                </ul>
+            </row>
+        {{ end }}
+        </content>
+    </div>
+</div>
+
+{{ template "basic_style_js" }}
+</body>
+</html>
 
 {{ end }}

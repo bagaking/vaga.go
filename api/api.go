@@ -1,7 +1,7 @@
 package api
 
 import (
-	"bagaking.com/vaga.go/localVideos"
+	"github.com/bagaking/vaga.go/localVideos"
 	"github.com/julienschmidt/httprouter"
 )
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bagaking.com/vaga.go/api"
+	"github.com/bagaking/vaga.go/api"
 	"net/http"
 )
 

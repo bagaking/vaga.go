@@ -1,7 +1,7 @@
 package api
 
 import (
-	"bagaking.com/vaga.go/localVideos"
+	"github.com/bagaking/vaga.go/localVideos"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"html/template"
@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"strings"
 )
 
 type H interface{}
@@ -40,10 +41,18 @@ func HandlerVideoIndex(writer http.ResponseWriter, request *http.Request, params
  * handler of showing video tree of a video blob
  */
 func HandlerVideoTree(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	t, _ := template.ParseFiles("./tpl/tree.html", "./tpl/basic_style.html")
+	itoaVal := 0
+	t, _ := template.New("tree.html").Funcs(template.FuncMap{
+		"replace": func(input, from, to string) string {
+			return strings.Replace(input, from, to, -1)
+		},
+		"itoa": func() int {
+			itoaVal = itoaVal + 1
+			return itoaVal
+		},
+	}).ParseFiles("./tpl/tree.html", "./tpl/basic_style.html")
 	indStr := params.ByName("blob_ind")
 	ind, _ := strconv.Atoi(indStr)
-
 
 	blob := AllAvailableVideoBlobs[ind]
 	fmt.Println(blob.Name, &blob)
@@ -57,6 +66,7 @@ func HandlerVideoTree(writer http.ResponseWriter, request *http.Request, params 
 		}
 		resultMap[lastDirName] = append(resultMap[lastDirName], videoMeta)
 	}
+
 	_ = t.ExecuteTemplate(writer, "tree", map[string]interface{}{
 		"resultMap": resultMap,
 		"blob":      blob,

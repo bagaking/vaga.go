@@ -5,6 +5,7 @@ import (
 	. "github.com/c2h5oh/datasize"
 	"io/ioutil"
 	"strings"
+	"path"
 )
 
 type Video struct {
@@ -38,10 +39,9 @@ func (videoBlob *VideoBlob) scanVideos(baseName string) error {
 	for _, fi := range rd {
 		fileName := fi.Name()
 
-		pathFile := baseName + fileName
+		pathFile := path.Join(baseName, fileName)
 		if fi.IsDir() {
-			pathDir := pathFile + "\\"
-
+			pathDir := pathFile
 			videoBlob.scanVideos(pathDir)
 		} else {
 			if strings.HasSuffix(fileName, ".mp4") {

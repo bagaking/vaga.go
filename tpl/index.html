@@ -1,59 +1,88 @@
 {{ define "index" }}
 
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style type="text/css">
-            .blob_info {
-                border: #aaaa66 2px solid;
-                border-radius: 10px;
-                margin: 10px auto;
-                background-color: #333333;
-                transition: background-color 0.2s ease-in-out 0s;
-                cursor: pointer /*变成手型*/
-            }
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
 
-            .blob_info:hover {
-                border: #ffffcc 2px solid;
-                border-bottom-color: #aaaa66;
-                border-right-color: #aaaa66;
-                background-color: #0056B0;
-            }
+        a, span, h5 {
+            background-color: transparent !important;
+        }
 
-            a, span, h5 {
-                background-color: transparent !important;
-            }
-            a {
-                color: #f60;
-            }
-        </style>
+        a {
+            color: #f60;
+        }
 
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        {{ template "basic_style" }}
-        <title>Vagaking</title>
-    </head>
-    <body>
-    <h1>Welcome to Vagaking</h1>
-    <h6>The awesome video site of Bagaking</h6>
+        row {
+            text-align: center;
+        }
 
-    <br/>
-    {{ range $ind, $blob := . }}
-{{/*        <a href="/tree/{{$ind}}">*/}}
-            <div class="blob_info" id="blob{{$ind}}" onclick="location.href='/tree/{{$ind}}'">
-                <h5>
-                    <span style="margin: 20px;"> - </span>
-                    <a>{{.Name}}</a>
-                </h5>
-                <div style="margin: auto 54px; color: #cccccc">
-                    <p>{{.Description}}</p>
-                </div>
+        h1, blockquote {
+            padding: 0 48px;
+        }
 
-            </div>
-{{/*        </a>*/}}
-    {{ end }}
+
+        .blob_info {
+            border: #aaaa66 1px solid;
+            border-radius: 3px;
+            margin: 10px auto;
+            background-color: #333333;
+            transition: background-color 0.2s ease-in-out 0s;
+            cursor: pointer; /*变成手型*/
+            width: 90%
+        }
+
+        .blob_info h5 {
+            margin: 10px 10px;
+        }
+
+        .blob_info:hover {
+            border: #8888aa 1px solid;
+            border-bottom-color: #555566;
+            border-right-color: #555566;
+            background-color: #3366AA;
+        }
+
+
+    </style>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+{{ template "basic_style" }}
+    <title>Vagaking</title>
+</head>
+<body>
+
+<content class="container">
+
+    <div class="row">
+        <h1>Welcome to Vagaking</h1>
+    </div>
+    <div class="row">
+        <blockquote>The awesome video site of Bagaking</blockquote>
     </div>
 
-    </body>
-    </html>
+
+{{ range $ind, $blob := . }}
+{{/*        <a href="/tree/{{$ind}}">*/}}
+    <div class="row">
+        <div class="blob_info" id="blob{{$ind}}" onclick="location.href='/tree/{{$ind}}'">
+            <h5>
+                <i class="fa fa-star "></i> {{.Name}}
+            </h5>
+            <div style="margin: auto 32px; color: #cccccc">
+                <p>{{.Description}}</p>
+            </div>
+
+        </div>
+    </div>
+
+{{/*        </a>*/}}
+{{ end }}
+    </div>
+
+{{ template "basic_style_js" }}
+</content>
+</body>
+</html>
 
 {{ end }}
