@@ -16,7 +16,7 @@ import (
 type H interface{}
 
 var AllAvailableVideoBlobs []*localVideos.VideoBlob // deep copy
-var VideoDirMap map[string][]localVideos.Video
+var VideoDirMap map[string][]*localVideos.Video
 
 /**
  * init all video blobs
@@ -29,15 +29,17 @@ func initial(allAvailableVideoBlobs []*localVideos.VideoBlob) {
 	}
 	AllAvailableVideoBlobs = allAvailableVideoBlobs
 
-	VideoDirMap = make(map[string][]localVideos.Video)
+	VideoDirMap = make(map[string][]*localVideos.Video)
 	for _, blob := range AllAvailableVideoBlobs {
-		for _, videoMeta := range blob.Videos {
-			if nil == VideoDirMap[videoMeta.DirName] {
-				VideoDirMap[videoMeta.DirName] = make([]localVideos.Video, 0)
+		for dir, pVideos := range blob.DirMap {
+			fmt.Println("=", dir, pVideos)
+			if nil == VideoDirMap[dir] {
+				VideoDirMap[dir] = make([]*localVideos.Video, 0)
 			}
-			VideoDirMap[videoMeta.DirName] = append(VideoDirMap[videoMeta.DirName], videoMeta)
+			for _, pVideo := range pVideos {
+				VideoDirMap[dir] = append(VideoDirMap[dir], pVideo)
+			}
 		}
-
 	}
 
 }
@@ -79,7 +81,7 @@ func HandlerVideoTree(writer http.ResponseWriter, request *http.Request, params 
 	fmt.Println(blob.Name, &blob)
 
 	executeTemplate(writer, "tree", map[string]interface{}{
-		"VideoDirMap": VideoDirMap,
+		"VideoDirMap": blob.DirMap,
 		"blob":        blob,
 	})
 }
