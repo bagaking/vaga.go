@@ -16,59 +16,6 @@
             background: #262a30;
         }
 
-        atitle {
-            /*background: #333333;*/
-            border: #333 2px solid;
-            font: 24px "Microsoft YaHei", "Arial";
-            color: #ABC;
-            padding: 20px;
-            margin: 0 0 5px 0;
-            text-align: center;
-        }
-
-        atitle i {
-            /*font-size: 24px;*/
-            color: #ABC;
-            margin: 0 20px ;
-        }
-
-        atitle i:hover {
-            /*font-size: 24px;*/
-            color: #CC9966;
-            margin: 0 22px ;
-        }
-
-        aside ul {
-            padding: 0px 5px 5px 0px;
-        }
-
-        aside ul li {
-            display: list-item;
-
-            float: left;
-            margin: 2px auto;
-
-            background: transparent;
-            list-style: none;
-            line-height: 25px;
-
-            color: #999;
-            text-decoration: none
-        }
-
-        aside ul li a {
-            display: block;
-        }
-
-        aside ul li:hover {
-            margin: 0px auto;
-            background: transparent;
-            color: #CCC;
-            cursor: pointer;
-        }
-
-
-
         content .folder {
              background: #333;
              border: #363636 1px solid;
@@ -113,10 +60,16 @@
             transition: background-color 0.2s ease-in-out 0s;
         }
 
-        content .folder_content {
+        content .folder_content{
             padding: 0 6px;
             display: none;
         }
+
+        content ol{
+            margin: 0 24px;
+            display: none;
+        }
+
 
     </style>
 
@@ -142,31 +95,24 @@
 
         Resources in {{ .blob.Name }}
     </atitle>
-       {{/*<aside class="col-sm-3">*/}}
-    {{/*<ul style="display: block;">*/}}
-    {{/*{{ range $key, $value := .resultMap }}*/}}
-    {{/*<li><a>{{ $key }}</a></li>*/}}
-    {{/*{{ end }}*/}}
-    {{/*</ul>*/}}
-    {{/*</aside>*/}}
 
         <content class="col-sm">
         {{ $ind := 0 }}
-        {{ range $key, $value := .resultMap }}
+        {{ range $key, $value := .VideoDirMap }}
             <row>
                 <h6 class="folder" onclick="CheckTag({{ $key }}, this)">
                     <itoa>{{itoa}}</itoa>
                     {{ $key }}
                     <span>{{len .}}</span>
                 </h6>
-                <ul class="folder_content" id="{{ $key }}">
+                <ol class="folder_content" id="{{ $key }}">
                 {{ range . }}
                     <li>
                         <a href="/watch/{{.NameHash}}"> {{.FileName}}</a> <a style="color: #666666"> - ({{.FileSizeH}}
                         )</a>
                     </li>
                 {{end}}
-                </ul>
+                </ol>
             </row>
         {{ end }}
         </content>

@@ -1,45 +1,111 @@
 {{ define "watch" }}
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        {{ template "basic_style" }}
-        <link href="https://vjs.zencdn.net/7.6.6/video-js.css" rel="stylesheet"/>
-        <script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
-        <title>Vagaking - Watch {{ .FileName }}</title>
-    </head>
-    <body  >
-    <div style="width: 70vw; height: 42vw; margin:20px auto;">
-        <h1>{{.FileName}}</h1>
-        <br/>
-        <video
-                id="my-video"
-                class="video-js vjs-big-play-centered"
-                controls
-                preload="auto"
-                width="100%"
-                height="100%"
-                poster="MY_VIDEO_POSTER.jpg"
-                data-setup='{ "playbackRates": [0.5, 1, 1.5, 1.8, 2] }'
-                style="width: 100%; height:100%;"
-        >
-            <source src="/video/{{.NameHash}}" type="video/mp4"/>
-            <div class="vjs-big-play-button"></div>
-            <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a
-                web browser that
-                <a href="https://videojs.com/html5-video-support/" target="_blank"
-                >supports HTML5 video</a
-                >
-            </p>
-        </video>
-        <span style="align-self:revert">(SIZE: {{.FileSizeH}})</span>
-        <h5>{{.Location}}</h5>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+{{ template "basic_style" }}
+    <link href="https://vjs.zencdn.net/7.6.6/video-js.css" rel="stylesheet"/>
+    <script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
+    <title>Vagaking - Watch {{ .FileName }}</title>
 
-    {{ template "basic_style_js" }}
-    </body>
-    </html>
+    <style type="text/css">
+        .list-group-item {
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            padding-top: 30px;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-container iframe,
+        .video-container object,
+        .video-container embed {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <atitle class="row">
+        <div class="col-md-1">
+            <a href="/">
+                <i id="home-icon" class="fa fa-home" title="回到主页"> </i>
+            </a>
+        </div>
+        <div class="col-md-11 text-left">
+        {{.video.FileName}}
+            <span class="badge">({{.video.FileSizeH}})</span>
+        </div>
+
+    </atitle>
+
+    <div class="row">
+
+        <div class="panel panel-info col-md-8">
+            <div class="panel-body video-container"
+                 style="width: 100%; height: 30vw; margin:0px auto;"
+            >
+                <video
+                        id="my-video"
+                        class="video-js vjs-big-play-centered video-container"
+                        controls
+                        preload="auto"
+                {{/*width="100%"*/}}
+                {{/*height="100%"*/}}
+                        width="560" height="315"
+                        poster="MY_VIDEO_POSTER.jpg"
+                        data-setup='{ "playbackRates": [0.5, 1, 1.5, 1.8, 2] }'
+                        style="width: 100%; height:100%;"
+                >
+                    <source src="/video/{{.video.NameHash}}" type="video/mp4"/>
+                    <div class="vjs-big-play-button"></div>
+                    <p class="vjs-no-js">
+                        To view this video please enable JavaScript, and consider upgrading to a
+                        web browser that
+                        <a href="https://videojs.com/html5-video-support/" target="_blank"
+                        >supports HTML5 video</a
+                        >
+                    </p>
+                </video>
+            </div>
+            <div class="panel-footer" style="color: #666">
+            {{.video.Location}}
+            </div>
+        </div>
+        <div class="col-md-4" id="video-list">
+            <ol class="folder_content list-group" id="video-list">
+            {{$video := .video}}
+            {{ range .dir }}
+                <li class="list-group-item {{if eq .NameHash $video.NameHash}} active {{end}}"
+                {{if ne .NameHash $video.NameHash}} onclick="document.location='/watch/{{.NameHash}}'" {{end}}
+                    style="color: {{if eq .NameHash $video.NameHash}} white {{else}} #5588CC {{end}}"
+                >
+                {{.FileName}}
+                    <span class="badge">{{.FileSizeH}}</span>
+                </li>
+            {{end}}
+            </ol>
+        </div>
+    </div>
+{{/*<div class="row" style="padding: 10px">*/}}
+{{/**/}}
+{{/*</div>*/}}
+</div>
+
+{{ template "basic_style_js" }}
+</body>
+</html>
 
 {{end}}

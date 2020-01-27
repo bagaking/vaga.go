@@ -16,6 +16,7 @@ import (
 type H interface{}
 
 var AllAvailableVideoBlobs []*localVideos.VideoBlob // deep copy
+var VideoDirMap map[string][]localVideos.Video
 
 /**
  * init all video blobs
@@ -27,22 +28,23 @@ func initial(allAvailableVideoBlobs []*localVideos.VideoBlob) {
 		}
 	}
 	AllAvailableVideoBlobs = allAvailableVideoBlobs
+
+	VideoDirMap = make(map[string][]localVideos.Video)
+	for _, blob := range AllAvailableVideoBlobs {
+		for _, videoMeta := range blob.Videos {
+			if nil == VideoDirMap[videoMeta.DirName] {
+				VideoDirMap[videoMeta.DirName] = make([]localVideos.Video, 0)
+			}
+			VideoDirMap[videoMeta.DirName] = append(VideoDirMap[videoMeta.DirName], videoMeta)
+		}
+
+	}
+
 }
 
-/**
- * handler of showing page - index
- */
-func HandlerVideoIndex(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	t, _ := template.ParseFiles("./tpl/index.html", "./tpl/basic_style.html")
-	_ = t.ExecuteTemplate(writer, "index", AllAvailableVideoBlobs)
-}
-
-/**
- * handler of showing video tree of a video blob
- */
-func HandlerVideoTree(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+func executeTemplate(wr io.Writer, name string, data interface{}) error {
 	itoaVal := 0
-	t, _ := template.New("tree.html").Funcs(template.FuncMap{
+	tpl, _ := template.New(name + ".html").Funcs(template.FuncMap{
 		"replace": func(input, from, to string) string {
 			return strings.Replace(input, from, to, -1)
 		},
@@ -50,26 +52,35 @@ func HandlerVideoTree(writer http.ResponseWriter, request *http.Request, params 
 			itoaVal = itoaVal + 1
 			return itoaVal
 		},
-	}).ParseFiles("./tpl/tree.html", "./tpl/basic_style.html")
+	}).ParseFiles(
+		"./tpl/"+name+".html",
+		"./tpl/basic_style.html",
+	)
+	return tpl.ExecuteTemplate(wr, name, data)
+}
+
+/**
+ * handler of showing page - index
+ */
+func HandlerVideoIndex(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	executeTemplate(writer, "index",
+		AllAvailableVideoBlobs,
+	)
+}
+
+/**
+ * handler of showing video tree of a video blob
+ */
+func HandlerVideoTree(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	indStr := params.ByName("blob_ind")
 	ind, _ := strconv.Atoi(indStr)
 
 	blob := AllAvailableVideoBlobs[ind]
 	fmt.Println(blob.Name, &blob)
 
-	resultMap := make(map[string][]localVideos.Video)
-	lastDirName := ""
-	for _, videoMeta := range blob.Videos {
-		if videoMeta.DirName != lastDirName {
-			lastDirName = videoMeta.DirName
-			resultMap[lastDirName] = make([]localVideos.Video, 0)
-		}
-		resultMap[lastDirName] = append(resultMap[lastDirName], videoMeta)
-	}
-
-	_ = t.ExecuteTemplate(writer, "tree", map[string]interface{}{
-		"resultMap": resultMap,
-		"blob":      blob,
+	executeTemplate(writer, "tree", map[string]interface{}{
+		"VideoDirMap": VideoDirMap,
+		"blob":        blob,
 	})
 }
 
@@ -78,8 +89,13 @@ func HandlerVideoTree(writer http.ResponseWriter, request *http.Request, params 
  */
 func HandlerVideoWatch(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	hash := params.ByName("video_hash")
-	t, _ := template.ParseFiles("./tpl/watch.html", "./tpl/basic_style.html")
-	_ = t.ExecuteTemplate(writer, "watch", localVideos.VideosMap[hash])
+	video := localVideos.VideosMap[hash]
+
+	executeTemplate(writer, "watch",
+		map[string]interface{}{
+			"dir": VideoDirMap[video.DirName],
+			"video":  video,
+		})
 }
 
 /**
