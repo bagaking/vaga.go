@@ -25,6 +25,7 @@ type VideoBlob struct {
 
 	MaxDepth        int `json:"max_depth"`
 	ShrinkThreshold int `json:"shrink_threshold"`
+	ShrinkMaxCount  int `json:"shrink_max_count"`
 
 	Videos []Video             `json:"videos"`
 	DirMap map[string][]*Video `json:"dir_map"`
@@ -59,7 +60,8 @@ func (videoBlob *VideoBlob) initialDirMap() {
 		videoBlob.DirMap[dirName] = append(videoBlob.DirMap[dirName], &videoBlob.Videos[ind])
 	}
 
-	for finished := false; !finished; {
+	shrinkLeftCount := - videoBlob.ShrinkMaxCount
+	for finished := false; !finished && shrinkLeftCount != -1; shrinkLeftCount ++{
 		finished = true
 		for dirName, videos := range videoBlob.DirMap {
 			if len(videos) >= videoBlob.ShrinkThreshold {
