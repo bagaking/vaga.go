@@ -27,12 +27,12 @@ type VideoBlob struct {
 	ShrinkThreshold int `json:"shrink_threshold"`
 	ShrinkMaxCount  int `json:"shrink_max_count"`
 
-	Videos []Video             `json:"videos"`
+	Videos []*Video             `json:"videos"`
 	DirMap map[string][]*Video `json:"dir_map"`
 }
 
 //var Videos = make([]Video, 0, 10000)
-var VideosMap = map[string]Video{}
+var VideosMap = map[string]*Video{}
 
 func (videoBlob *VideoBlob) Initial() error {
 	if err := videoBlob.scanVideos(videoBlob.RootPath, 0); err != nil {
@@ -57,29 +57,50 @@ func (videoBlob *VideoBlob) initialDirMap() {
 		if nil == videoBlob.DirMap[dirName] {
 			videoBlob.DirMap[dirName] = make([]*Video, 0)
 		}
-		videoBlob.DirMap[dirName] = append(videoBlob.DirMap[dirName], &videoBlob.Videos[ind])
+		videoBlob.DirMap[dirName] = append(videoBlob.DirMap[dirName], videoBlob.Videos[ind])
 	}
 
 	shrinkLeftCount := - videoBlob.ShrinkMaxCount
-	for finished := false; !finished && shrinkLeftCount != -1; shrinkLeftCount ++{
+	for finished := false; !finished && shrinkLeftCount != -1; shrinkLeftCount ++ {
 		finished = true
+
+		shrinkDirNames := map[string]bool{}
 		for dirName, videos := range videoBlob.DirMap {
 			if len(videos) >= videoBlob.ShrinkThreshold {
 				continue
 			}
 			dirNameParent := path.Dir(dirName)
-			nameCurrent := path.Base(dirName)
 			if strings.Trim(dirName, " ") == "" ||
 				dirNameParent == dirName {
-				continue;
+				continue
 			}
+
+			shrinkDirNames[dirNameParent] = true
+		}
+
+		for dirName := range videoBlob.DirMap {
+			dirNameParent := ""
+			dirNameAncient := path.Dir(dirName)
+			for ; dirNameAncient != "" && dirNameAncient != path.Dir(dirNameAncient); dirNameAncient = path.Dir(dirNameAncient) {
+				if shrinkDirNames[dirNameAncient] {
+					dirNameParent = dirNameAncient
+				}
+			}
+
+			if !shrinkDirNames[dirNameParent] {
+				continue
+			}
+
+			//fmt.Println("dirNameParent", dirNameParent)
 
 			if videoBlob.DirMap[dirNameParent] == nil {
-				videoBlob.DirMap[dirNameParent] = make([]*Video, 0, videoBlob.ShrinkThreshold)
+				videoBlob.DirMap[dirNameParent] = []*Video{}
 			}
 
-			for _, pVideo := range videoBlob.DirMap[dirName] {
-				pVideo.FileName = path.Join(nameCurrent, pVideo.FileName)
+			dir := videoBlob.DirMap[dirName]
+			for i, pVideo := range dir {
+				dir[i].FileName = path.Join(strings.Replace(pVideo.DirName, dirNameParent, "", 1), pVideo.FileName)
+				dir[i].DirName = dirNameParent
 				videoBlob.DirMap[dirNameParent] = append(videoBlob.DirMap[dirNameParent], pVideo)
 			}
 
@@ -102,7 +123,7 @@ func (videoBlob *VideoBlob) scanVideos(baseName string, depth int) error {
 		} else {
 			if strings.HasSuffix(fileName, ".mp4") {
 				//fmt.Println("==", len(videoBlob.Videos), pathFile)
-				metaVideo := Video{
+				pVideo := &Video{
 					NameHash: Sha1([]byte(pathFile)),
 					DirName:  baseName,
 					Location: pathFile,
@@ -110,9 +131,9 @@ func (videoBlob *VideoBlob) scanVideos(baseName string, depth int) error {
 					FileName: fileName,
 					FileSize: fi.Size(),
 				}
-				metaVideo.FileSizeH = ByteSize(metaVideo.FileSize).HR()
-				videoBlob.Videos = append(videoBlob.Videos, metaVideo)
-				VideosMap[metaVideo.NameHash] = metaVideo
+				pVideo.FileSizeH = ByteSize(pVideo.FileSize).HR()
+				videoBlob.Videos = append(videoBlob.Videos, pVideo)
+				VideosMap[pVideo.NameHash] = pVideo
 				count++
 			} else {
 				//fmt.Printf("== x %s\n", pathFile)

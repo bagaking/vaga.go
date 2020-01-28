@@ -55,35 +55,29 @@
 
         <div class="panel panel-info col-md-8">
             <div class="panel-body video-container"
-                 style="width: 100%; height: 30vw; margin:0px auto;"
-            >
-                <video
-                        id="my-video"
-                        class="video-js vjs-big-play-centered video-container"
-                        controls
-                        preload="auto"
-                {{/*width="100%"*/}}
-                {{/*height="100%"*/}}
-                        width="560" height="315"
-                        poster="MY_VIDEO_POSTER.jpg"
-                        data-setup='{ "playbackRates": [0.5, 1, 1.5, 1.8, 2] }'
-                        style="width: 100%; height:100%;"
-                >
-                    <source src="/video/{{.video.NameHash}}" type="video/mp4"/>
-                    <div class="vjs-big-play-button"></div>
-                    <p class="vjs-no-js">
-                        To view this video please enable JavaScript, and consider upgrading to a
-                        web browser that
-                        <a href="https://videojs.com/html5-video-support/" target="_blank"
-                        >supports HTML5 video</a
-                        >
-                    </p>
-                </video>
+                 style="width: 100%; height: 30vw; margin:0px auto;">
+                    <video
+                            id="my-video"
+                            class="video-js vjs-big-play-centered video-container"
+                            controls
+                            preload="auto"
+                            width="560" height="315"
+                            data-setup='{ "playbackRates": [0.5, 1, 1.5, 1.8, 2] }'
+                            style="width: 100%; height:100%;"
+                    >
+                        <source src="/video/{{.video.NameHash}}" type="video/mp4"/>
+                        <div class="vjs-big-play-button"></div>
+                        <p class="vjs-no-js">
+                            To view this video please enable JavaScript, and consider upgrading to a web browser that
+                            <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                        </p>
+                    </video>
             </div>
             <div class="panel-footer" style="color: #666">
             {{.video.Location}}
             </div>
         </div>
+
         <div class="col-md-4" id="video-list">
             <ol class="folder_content list-group" id="video-list">
             {{$video := .video}}
@@ -99,9 +93,7 @@
             </ol>
         </div>
     </div>
-{{/*<div class="row" style="padding: 10px">*/}}
-{{/**/}}
-{{/*</div>*/}}
+
 </div>
 
 {{ template "basic_style_js" }}

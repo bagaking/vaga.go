@@ -32,7 +32,7 @@ func initial(allAvailableVideoBlobs []*localVideos.VideoBlob) {
 	VideoDirMap = make(map[string][]*localVideos.Video)
 	for _, blob := range AllAvailableVideoBlobs {
 		for dir, pVideos := range blob.DirMap {
-			fmt.Println("=", dir, pVideos)
+			//fmt.Println("=", dir, pVideos)
 			if nil == VideoDirMap[dir] {
 				VideoDirMap[dir] = make([]*localVideos.Video, 0)
 			}
@@ -78,7 +78,7 @@ func HandlerVideoTree(writer http.ResponseWriter, request *http.Request, params 
 	ind, _ := strconv.Atoi(indStr)
 
 	blob := AllAvailableVideoBlobs[ind]
-	fmt.Println(blob.Name, &blob)
+	fmt.Println("view tree : ", blob.Name, &blob)
 
 	executeTemplate(writer, "tree", map[string]interface{}{
 		"VideoDirMap": blob.DirMap,
@@ -91,12 +91,12 @@ func HandlerVideoTree(writer http.ResponseWriter, request *http.Request, params 
  */
 func HandlerVideoWatch(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	hash := params.ByName("video_hash")
-	video := localVideos.VideosMap[hash]
+	pVideo := localVideos.VideosMap[hash]
 
 	executeTemplate(writer, "watch",
 		map[string]interface{}{
-			"dir": VideoDirMap[video.DirName],
-			"video":  video,
+			"dir": VideoDirMap[pVideo.DirName],
+			"video": pVideo,
 		})
 }
 
