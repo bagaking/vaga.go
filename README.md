@@ -6,15 +6,28 @@ Another personal video site written by golang.
 > ci: none  
 > release: none  
 
-## Install
+## Journal
 
-Just like any golang project.
+-- update
 
-## Desc
+最近偶尔会用用, 但是 window 机器在卧室里略吵, 所以打算移到(储物室的)服务器上去. 稍微把配置提取了一下. 
 
-春节回家想起家里的机器上还有些视频想看, 所以干脆写个在线点播的网站
+也方便有相同需求人用(如果有的话).
+
+-- init
+
+春节回家想起家里的机器上还有些视频想看, 所以干脆写个在线点播的网站.
 
 暂时没打算完善所以配置写死的, 细节也没费心只有简单整理, 毕竟想起来写这个的时候离高铁发车只有三四个钟头了.
+
+## Install & Config
+
+1. 安装 `go get github.com/bagaking/vaga.go` , 并配置好 PATH
+2. 在准备运行 vaga 的路径配置 `vaga.json` 文件, 配置详见 `vaga.json.sample` 文件  
+    > 运行路径不一定需要是视频存储路径  
+    不过如果视频在运行路径下, vaga.json 中可以配置相对路径  
+3. 将 tpl 拷贝到运行路径下: `cp -R $GOPATH/src/github.com/bagaking/vaga.go/tpl ./`
+4. 运行 `vaga.go` 即可, 由于是直接推流, 所以支持的格式只有 `.mp4 | .ogg | .webm`
 
 ## Deploy
 

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	. "github.com/c2h5oh/datasize"
 	"io/ioutil"
-	"strings"
 	"path"
+	"strings"
 )
 
 type Video struct {
@@ -14,11 +14,12 @@ type Video struct {
 
 	DirName   string `json:"dir"`
 	FileName  string `json:"name"`
+	FileType  string `json:"typ"`
 	FileSize  int64  `json:"size"`
 	FileSizeH string `json:"size_h"`
 }
 
-type VideoBlob struct {
+type VideoBlobConf struct {
 	Name        string `json:"name"`
 	Description string `json:"desc"`
 	RootPath    string `json:"root"`
@@ -26,8 +27,12 @@ type VideoBlob struct {
 	MaxDepth        int `json:"max_depth"`
 	ShrinkThreshold int `json:"shrink_threshold"`
 	ShrinkMaxCount  int `json:"shrink_max_count"`
+}
 
-	Videos []*Video             `json:"videos"`
+type VideoBlob struct {
+	VideoBlobConf
+
+	Videos []*Video            `json:"videos"`
 	DirMap map[string][]*Video `json:"dir_map"`
 }
 
@@ -39,6 +44,7 @@ func (videoBlob *VideoBlob) Initial() error {
 		return err
 	}
 	videoBlob.initialDirMap()
+	fmt.Print("Videos initialed")
 	return nil
 }
 
@@ -61,7 +67,7 @@ func (videoBlob *VideoBlob) initialDirMap() {
 	}
 
 	shrinkLeftCount := - videoBlob.ShrinkMaxCount
-	for finished := false; !finished && shrinkLeftCount != -1; shrinkLeftCount ++ {
+	for finished := false; !finished && shrinkLeftCount != -1; shrinkLeftCount++ {
 		finished = true
 
 		shrinkDirNames := map[string]bool{}
@@ -117,11 +123,12 @@ func (videoBlob *VideoBlob) scanVideos(baseName string, depth int) error {
 		fileName := fi.Name()
 
 		pathFile := path.Join(baseName, fileName)
+		ext := strings.ToLower(path.Ext(fileName))
 		if fi.IsDir() {
 			pathDir := pathFile
 			videoBlob.scanVideos(pathDir, depth+1)
 		} else {
-			if strings.HasSuffix(fileName, ".mp4") {
+			if ext == ".mp4" || ext == ".ogg" || ext == ".webm" {
 				//fmt.Println("==", len(videoBlob.Videos), pathFile)
 				pVideo := &Video{
 					NameHash: Sha1([]byte(pathFile)),
@@ -129,6 +136,7 @@ func (videoBlob *VideoBlob) scanVideos(baseName string, depth int) error {
 					Location: pathFile,
 
 					FileName: fileName,
+					FileType: strings.ToLower(path.Ext(fileName)[1:]),
 					FileSize: fi.Size(),
 				}
 				pVideo.FileSizeH = ByteSize(pVideo.FileSize).HR()

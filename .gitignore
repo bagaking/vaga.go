@@ -1,3 +1,13 @@
+# vscode
+.history
+.vs_code
+
+# mod
+vendor/
+
+# vaga config
+vaga.json
+
 # dev env
 .idea/
 .DS_Store

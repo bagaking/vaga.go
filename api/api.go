@@ -5,8 +5,12 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func RegisterHandlers(allAvailableVideoBlobs []*localVideos.VideoBlob) *httprouter.Router {
-	initial(allAvailableVideoBlobs)
+func RegisterHandlers(config []localVideos.VideoBlobConf) *httprouter.Router {
+	blobs := make([]*localVideos.VideoBlob, len(config))
+	for i, conf := range config {
+		blobs[i] = &localVideos.VideoBlob{VideoBlobConf: conf}
+	}
+	initial(blobs)
 
 	router := httprouter.New()
 
@@ -16,6 +20,3 @@ func RegisterHandlers(allAvailableVideoBlobs []*localVideos.VideoBlob) *httprout
 	router.GET("/video/:video_hash", HandlerVideoStream)
 	return router
 }
-
-
-

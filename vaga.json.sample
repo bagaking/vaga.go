@@ -1,0 +1,18 @@
+{
+  "roots": [
+    {
+      "name": "Art-3D",
+      "desc": "3D建模有关的演示视频",
+      "root": "/home/videos/arts/3d",
+      "shrink_threshold": 4,
+      "shrink_max_count": 2
+    },
+    {
+      "name": "Art-Drawing",
+      "desc": "绘画方面的演示视频",
+      "root": "/home/videos/arts/drawing",
+      "shrink_threshold": 1,
+      "shrink_max_count": 1
+    }
+  ]
+}

@@ -1,16 +1,16 @@
 package api
 
 import (
-	"github.com/bagaking/vaga.go/localVideos"
 	"fmt"
+	"github.com/bagaking/vaga.go/localVideos"
 	"github.com/julienschmidt/httprouter"
 	"html/template"
 	"io"
 	"net/http"
 	"os"
 	"strconv"
-	"time"
 	"strings"
+	"time"
 )
 
 type H interface{}
@@ -46,7 +46,7 @@ func initial(allAvailableVideoBlobs []*localVideos.VideoBlob) {
 
 func executeTemplate(wr io.Writer, name string, data interface{}) error {
 	itoaVal := 0
-	tpl, _ := template.New(name + ".html").Funcs(template.FuncMap{
+	tpl, _ := template.New(name+".html").Funcs(template.FuncMap{
 		"replace": func(input, from, to string) string {
 			return strings.Replace(input, from, to, -1)
 		},
@@ -95,7 +95,7 @@ func HandlerVideoWatch(writer http.ResponseWriter, request *http.Request, params
 
 	executeTemplate(writer, "watch",
 		map[string]interface{}{
-			"dir": VideoDirMap[pVideo.DirName],
+			"dir":   VideoDirMap[pVideo.DirName],
 			"video": pVideo,
 		})
 }
@@ -114,6 +114,7 @@ func HandlerVideoStream(writer http.ResponseWriter, request *http.Request, param
 	}
 	defer video.Close()
 
-	writer.Header().Set("Content-Type", "video/mp4")
+	writer.Header().Set("Content-Type", "video/"+pathVideo.FileType)
+
 	http.ServeContent(writer, request, video.Name(), time.Now(), video)
 }
